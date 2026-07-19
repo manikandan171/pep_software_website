@@ -86,11 +86,9 @@ d:/Pep_Software/employee-management-system/
 3. Start the Vite development server: `npm run dev`
    - The application will be available at `http://localhost:5173`
 
-### Git Ignored Files (For New Developers)
+### Git Ignored Files
 When cloning this repository, certain files are intentionally ignored by Git (`.gitignore`) and will not be present. You must generate them locally:
 - **`node_modules/`**: Contains all external dependencies. You must run `npm install` in both the `frontend/` and `backend/` directories to generate these.
-- **`.env` files**: Used for storing sensitive environment variables and secrets. In the future, you will need to create a `.env` file locally to store your own database credentials and API keys.
-- **`dist/` & `logs`**: Build outputs and error logs are kept locally to your machine and are never pushed to the central repository.
 
 ## API Documentation
 
