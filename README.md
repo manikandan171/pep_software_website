@@ -6,10 +6,10 @@ The Employee Management System is a full-stack web application designed to effic
 ## Screenshots
 
 ### Dashboard
-![Dashboard](image/dashboard.png)
+<img src="image/dashboard.png" width="600" alt="Dashboard" />
 
 ### Add/Edit Employee Form
-![Form](image/form.png)
+<img src="image/form.png" width="600" alt="Form" />
 
 ## Tech Stack
 **Frontend:**
