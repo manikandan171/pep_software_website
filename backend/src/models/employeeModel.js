@@ -19,22 +19,32 @@ const getAllEmployees = (filters, callback) => {
 
   query += ' ORDER BY createdAt DESC';
 
-  db.all(query, params, (err, rows) => {
+  db.query(query, params, (err, rows) => {
     callback(err, rows);
   });
 };
 
 const getEmployeeById = (id, callback) => {
   const query = 'SELECT * FROM employees WHERE id = ?';
-  db.get(query, [id], (err, row) => {
-    callback(err, row);
+  db.query(query, [id], (err, rows) => {
+    if (err) return callback(err, null);
+    callback(null, rows.length > 0 ? rows[0] : null);
   });
 };
 
 const getEmployeeByEmail = (email, callback) => {
   const query = 'SELECT * FROM employees WHERE email = ?';
-  db.get(query, [email], (err, row) => {
-    callback(err, row);
+  db.query(query, [email], (err, rows) => {
+    if (err) return callback(err, null);
+    callback(null, rows.length > 0 ? rows[0] : null);
+  });
+};
+
+const getEmployeeByMobile = (mobile, callback) => {
+  const query = 'SELECT * FROM employees WHERE mobileNumber = ?';
+  db.query(query, [mobile], (err, rows) => {
+    if (err) return callback(err, null);
+    callback(null, rows.length > 0 ? rows[0] : null);
   });
 };
 
@@ -46,9 +56,9 @@ const createEmployee = (employee, callback) => {
   `;
   const params = [fullName, email, mobileNumber, department, designation, joiningDate, status];
   
-  // Use function() to get this.lastID
-  db.run(query, params, function (err) {
-    callback(err, this ? this.lastID : null);
+  db.query(query, params, (err, result) => {
+    if (err) return callback(err, null);
+    callback(null, result.insertId);
   });
 };
 
@@ -56,20 +66,22 @@ const updateEmployee = (id, employee, callback) => {
   const { fullName, email, mobileNumber, department, designation, joiningDate, status } = employee;
   const query = `
     UPDATE employees 
-    SET fullName = ?, email = ?, mobileNumber = ?, department = ?, designation = ?, joiningDate = ?, status = ?, updatedAt = CURRENT_TIMESTAMP
+    SET fullName = ?, email = ?, mobileNumber = ?, department = ?, designation = ?, joiningDate = ?, status = ?
     WHERE id = ?
   `;
   const params = [fullName, email, mobileNumber, department, designation, joiningDate, status, id];
   
-  db.run(query, params, function (err) {
-    callback(err, this ? this.changes : 0);
+  db.query(query, params, (err, result) => {
+    if (err) return callback(err, 0);
+    callback(null, result.affectedRows);
   });
 };
 
 const deleteEmployee = (id, callback) => {
   const query = 'DELETE FROM employees WHERE id = ?';
-  db.run(query, [id], function (err) {
-    callback(err, this ? this.changes : 0);
+  db.query(query, [id], (err, result) => {
+    if (err) return callback(err, 0);
+    callback(null, result.affectedRows);
   });
 };
 
@@ -77,12 +89,17 @@ const getDashboardStats = (callback) => {
   const query = `
     SELECT 
       COUNT(*) as total,
-      SUM(CASE WHEN status = 'Active' THEN 1 ELSE 0 END) as active,
-      SUM(CASE WHEN status = 'Inactive' THEN 1 ELSE 0 END) as inactive
+      COALESCE(SUM(CASE WHEN status = 'Active' THEN 1 ELSE 0 END), 0) as active,
+      COALESCE(SUM(CASE WHEN status = 'Inactive' THEN 1 ELSE 0 END), 0) as inactive,
+      COUNT(DISTINCT department) as departments,
+      COALESCE(SUM(CASE WHEN MONTH(createdAt) = MONTH(CURRENT_DATE()) AND YEAR(createdAt) = YEAR(CURRENT_DATE()) THEN 1 ELSE 0 END), 0) as totalThisMonth,
+      COALESCE(SUM(CASE WHEN status = 'Active' AND MONTH(createdAt) = MONTH(CURRENT_DATE()) AND YEAR(createdAt) = YEAR(CURRENT_DATE()) THEN 1 ELSE 0 END), 0) as activeThisMonth,
+      COALESCE(SUM(CASE WHEN status = 'Inactive' AND MONTH(createdAt) = MONTH(CURRENT_DATE()) AND YEAR(createdAt) = YEAR(CURRENT_DATE()) THEN 1 ELSE 0 END), 0) as inactiveThisMonth
     FROM employees
   `;
-  db.get(query, [], (err, row) => {
-    callback(err, row);
+  db.query(query, [], (err, rows) => {
+    if (err) return callback(err, null);
+    callback(null, rows.length > 0 ? rows[0] : null);
   });
 };
 
@@ -90,6 +107,7 @@ module.exports = {
   getAllEmployees,
   getEmployeeById,
   getEmployeeByEmail,
+  getEmployeeByMobile,
   createEmployee,
   updateEmployee,
   deleteEmployee,

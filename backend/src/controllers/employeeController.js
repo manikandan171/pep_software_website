@@ -1,18 +1,14 @@
 const Employee = require('../models/employeeModel');
 const { STATUS_CODES } = require('../constants');
 
-// Utility for basic validation
 const validateEmail = (email) => {
-  return String(email)
-    .toLowerCase()
-    .match(
-      /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    );
+  const emailRegex = /^[a-z0-9][a-z0-9._%+-]*@[a-z0-9.-]+\.[a-z]{2,}$/;
+  return emailRegex.test(String(email));
 };
 
 const validatePhone = (phone) => {
-  // Simple validation for 10+ digits
-  return /^\+?[\d\s-]{10,}$/.test(phone);
+  const mobileRegex = /^[6-9]\d{9}$/;
+  return mobileRegex.test(String(phone));
 };
 
 const getEmployees = (req, res) => {
@@ -68,11 +64,21 @@ const createEmployee = (req, res) => {
       return res.status(STATUS_CODES.BAD_REQUEST).json({ message: 'Email already exists' });
     }
 
-    Employee.createEmployee(req.body, (err, id) => {
+    // Check if mobile number exists
+    Employee.getEmployeeByMobile(mobileNumber, (err, existingMobile) => {
       if (err) {
-        return res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ message: 'Error creating employee', error: err.message });
+        return res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ message: 'Database error', error: err.message });
       }
-      res.status(STATUS_CODES.CREATED).json({ message: 'Employee created successfully', id });
+      if (existingMobile) {
+        return res.status(STATUS_CODES.BAD_REQUEST).json({ message: 'Mobile number already exists' });
+      }
+
+      Employee.createEmployee(req.body, (err, id) => {
+        if (err) {
+          return res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ message: 'Error creating employee', error: err.message });
+        }
+        res.status(STATUS_CODES.CREATED).json({ message: 'Employee created successfully', id });
+      });
     });
   });
 };
@@ -101,21 +107,35 @@ const updateEmployee = (req, res) => {
       return res.status(STATUS_CODES.NOT_FOUND).json({ message: 'Employee not found' });
     }
 
-    // Check email uniqueness if email has changed
-    if (employee.email !== email) {
-      Employee.getEmployeeByEmail(email, (err, existing) => {
-        if (err) {
-          return res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ message: 'Database error', error: err.message });
-        }
-        if (existing) {
-          return res.status(STATUS_CODES.BAD_REQUEST).json({ message: 'Email already exists' });
-        }
-        
+    const checkEmail = (cb) => {
+      if (employee.email !== email) {
+        Employee.getEmployeeByEmail(email, (err, existing) => {
+          if (err) return res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ message: 'Database error', error: err.message });
+          if (existing) return res.status(STATUS_CODES.BAD_REQUEST).json({ message: 'Email already exists' });
+          cb();
+        });
+      } else {
+        cb();
+      }
+    };
+
+    const checkMobile = (cb) => {
+      if (employee.mobileNumber !== mobileNumber) {
+        Employee.getEmployeeByMobile(mobileNumber, (err, existing) => {
+          if (err) return res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ message: 'Database error', error: err.message });
+          if (existing) return res.status(STATUS_CODES.BAD_REQUEST).json({ message: 'Mobile number already exists' });
+          cb();
+        });
+      } else {
+        cb();
+      }
+    };
+
+    checkEmail(() => {
+      checkMobile(() => {
         performUpdate(id, req.body, res);
       });
-    } else {
-      performUpdate(id, req.body, res);
-    }
+    });
   });
 };
 
@@ -149,7 +169,11 @@ const getStats = (req, res) => {
     res.status(STATUS_CODES.OK).json({
       total: stats.total || 0,
       active: stats.active || 0,
-      inactive: stats.inactive || 0
+      inactive: stats.inactive || 0,
+      departments: stats.departments || 0,
+      totalThisMonth: stats.totalThisMonth || 0,
+      activeThisMonth: stats.activeThisMonth || 0,
+      inactiveThisMonth: stats.inactiveThisMonth || 0
     });
   });
 };

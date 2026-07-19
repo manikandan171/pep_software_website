@@ -1,106 +1,129 @@
 # Employee Management System
 
-A full-stack Employee Management System built with React, Node.js, Express, and SQLite.
-
 ## Project Overview
-This application provides a comprehensive dashboard to manage employees. It features a complete CRUD interface allowing users to view, add, edit, and delete employee records. The system provides real-time statistics (Total, Active, Inactive employees), and supports searching and filtering.
+The Employee Management System is a full-stack web application designed to efficiently manage employee records. It provides an intuitive dashboard for HR and administrators to view statistics, track employee status, and perform comprehensive CRUD (Create, Read, Update, Delete) operations. The system includes robust real-time validation, dynamic filtering, and data export capabilities.
+
+## Screenshots
+
+### Dashboard
+![Dashboard](image/dashboard.png)
+
+### Add/Edit Employee Form
+![Form](image/form.png)
 
 ## Tech Stack
-- **Frontend**: React.js (Vite), React Router, Axios, Lucide React (Icons), Vanilla CSS
-- **Backend**: Node.js, Express.js, SQLite (via `sqlite3`)
-- **Styling**: Modern, responsive, and premium UI with Vanilla CSS (Glassmorphism inspired, smooth animations).
+**Frontend:**
+- React 19
+- Vite
+- React Router DOM
+- Axios
+- Lucide React (Icons)
+- CSS3 (Custom styling)
+
+**Backend:**
+- Node.js
+- Express
+- MySQL2 (Database)
+- Cors
 
 ## Features
-- **Dashboard Metrics**: View Total, Active, and Inactive employees at a glance.
-- **Employee Management**: 
-  - Add new employees with detailed fields (Name, Email, Mobile, Department, Designation, Joining Date, Status).
-  - Edit existing employee records.
-  - Delete employees.
-- **Advanced Controls**:
-  - Search by employee name.
-  - Filter by Department and Status.
-- **Responsive Design**: Completely mobile-friendly UI.
-- **Validation**: Strict server-side and client-side validation (Email formatting, Mobile numbers).
+- **Comprehensive Dashboard**: View total, active, and inactive employees, alongside dynamic monthly trends and progress bars.
+- **Employee CRUD**: Seamlessly add, edit, and delete employee records.
+- **Strict Real-Time Validation**: 
+  - Full Name: Instantly blocks numbers and special characters.
+  - Email: Auto-lowercased, strictly enforces valid patterns.
+  - Mobile Number: Limited to exactly 10 digits starting with 6-9.
+- **Duplicate Prevention**: Backend uniqueness checks strictly prevent registering duplicate emails and mobile numbers, returning field-specific UI alerts.
+- **Advanced Filtering**: Filter records by employee name, department, or status instantly.
+- **Export to CSV**: Download the current view of the employee table directly to a CSV file.
 
 ## Folder Structure
-
-```
-employee-management-system/
-├── backend/
-│   ├── package.json
-│   ├── server.js               # Entry point
-│   └── src/
-│       ├── config/
-│       │   └── db.js           # SQLite setup
-│       ├── constants/
-│       │   └── index.js
-│       ├── controllers/
-│       │   └── employeeController.js
-│       ├── models/
-│       │   └── employeeModel.js
-│       └── routes/
-│           └── employeeRoutes.js
-├── frontend/
-│   ├── package.json
-│   ├── vite.config.js
-│   └── src/
-│       ├── App.jsx
-│       ├── index.css           # Global design system
-│       ├── components/         # Reusable UI components
-│       ├── pages/              # View pages
-│       ├── services/           # Axios API configuration
-│       └── utils/
-│           └── constants.js
-└── README.md
+```text
+d:/Pep_Software/employee-management-system/
+│
+├── backend/                  # Node.js + Express Backend
+│   ├── src/
+│   │   ├── config/           # Database configuration (db.js)
+│   │   ├── constants/        # Application constants and Status Codes
+│   │   ├── controllers/      # Route controllers (employeeController.js)
+│   │   ├── models/           # MySQL Database operations (employeeModel.js)
+│   │   └── routes/           # Express API routing (employeeRoutes.js)
+│   ├── server.js             # Main server entry point
+│   └── package.json
+│
+└── frontend/                 # React + Vite Frontend
+    ├── src/
+    │   ├── components/       # Reusable UI components (Modals, Tables, Cards)
+    │   ├── pages/            # Main page views (Home.jsx)
+    │   ├── services/         # Axios API configuration (api.js)
+    │   ├── utils/            # Shared constants (constants.js)
+    │   ├── App.jsx           # Root React component
+    │   ├── index.css         # Global styling
+    │   └── main.jsx          # React DOM mounting
+    ├── index.html            # Vite HTML template
+    └── package.json
 ```
 
 ## Setup Instructions
 
 ### Prerequisites
-- [Node.js](https://nodejs.org/) (v16 or higher)
+- Node.js (v18+)
+- MySQL (v8.0+)
 
-### 1. Backend Setup
-Navigate to the backend directory, install dependencies, and start the server.
-```bash
-cd backend
-npm install
-npm start
-```
-*Note: SQLite will automatically create the `database.sqlite` file and necessary tables on the first run.*
-The backend will run on `http://localhost:5000`.
+### Database Setup
+1. Ensure your local MySQL server is running on port `3307`.
+2. The application is configured to automatically create the `pep_software` database and the `employees` table on startup. Ensure the user `root` with password `1234` exists, or adjust `backend/src/config/db.js` to match your MySQL credentials.
 
-### 2. Frontend Setup
-Open a new terminal window, navigate to the frontend directory, install dependencies, and start the development server.
-```bash
-cd frontend
-npm install
-npm run dev
-```
-The frontend will run on `http://localhost:5173`.
+### Backend Setup
+1. Open a terminal and navigate to the backend directory: `cd backend`
+2. Install dependencies: `npm install`
+3. Start the server: `npm start` or `npm run dev`
+   - The API will be available at `http://localhost:5000`
+
+### Frontend Setup
+1. Open a new terminal and navigate to the frontend directory: `cd frontend`
+2. Install dependencies: `npm install`
+3. Start the Vite development server: `npm run dev`
+   - The application will be available at `http://localhost:5173`
+
+### Git Ignored Files (For New Developers)
+When cloning this repository, certain files are intentionally ignored by Git (`.gitignore`) and will not be present. You must generate them locally:
+- **`node_modules/`**: Contains all external dependencies. You must run `npm install` in both the `frontend/` and `backend/` directories to generate these.
+- **`.env` files**: Used for storing sensitive environment variables and secrets. In the future, you will need to create a `.env` file locally to store your own database credentials and API keys.
+- **`dist/` & `logs`**: Build outputs and error logs are kept locally to your machine and are never pushed to the central repository.
 
 ## API Documentation
-Base URL: `http://localhost:5000/api`
 
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/employees` | GET | Retrieve all employees (supports `name`, `department`, `status` query params) |
-| `/employees/stats` | GET | Retrieve dashboard statistics (total, active, inactive) |
-| `/employees/:id` | GET | Retrieve a single employee by ID |
-| `/employees` | POST | Create a new employee |
-| `/employees/:id` | PUT | Update an existing employee |
-| `/employees/:id` | DELETE | Delete an employee |
+The backend exposes a RESTful API hosted at `/api/employees`.
+
+| Method | Endpoint | Description | Query/Body |
+|--------|----------|-------------|------------|
+| `GET`  | `/api/employees` | Get all employees | `?name=&department=&status=` |
+| `GET`  | `/api/employees/stats` | Get dashboard statistics | None |
+| `GET`  | `/api/employees/:id` | Get single employee | URL Param: `id` |
+| `POST` | `/api/employees` | Create a new employee | JSON body matching employee schema |
+| `PUT`  | `/api/employees/:id` | Update existing employee | JSON body matching employee schema |
+| `DELETE`| `/api/employees/:id` | Delete an employee | URL Param: `id` |
+
+## Development Flow
+1. **Component Design**: UI components were built prioritizing reusability (e.g., Modals, Data Tables, Dashboard Cards).
+2. **Form Management**: Employee modifications happen via a centralized Modal using React state to manage dynamic input, strict regex patterns, and asynchronous API calls.
+3. **Backend Integration**: The Express server acts as a bridge to MySQL using the `mysql2` connection pool, ensuring queries are robust, parameterized, and secure against SQL injection.
+4. **Validation Pipeline**: Validation operates on two layers:
+   - Frontend: Instantly shapes input (e.g., auto-lowercasing, blocking numbers) and validates against regex.
+   - Backend: Re-verifies structural integrity and performs asynchronous uniqueness checks against the database.
 
 ## Application Flow
-1. **Initial Load**: The frontend fetches dashboard stats and the full employee list from the backend.
-2. **Adding/Editing**: Modal forms collect input. On submit, data is sent to the backend. The backend validates and executes the SQLite query. On success, the UI triggers a re-fetch.
-3. **Filtering**: As the user types in the search box or changes dropdowns, API requests are debounced and sent with query parameters, updating the table instantly.
+1. **Initialization**: On initial render, the frontend fetches both employee data and dashboard statistics concurrently.
+2. **Dashboard Rendering**: 
+   - Cards display total counts and monthly trends.
+   - The table renders the employee dataset.
+3. **Filtering**: Utilizing the top filter bar updates React state, triggering an automatic, debounced API request to fetch filtered data.
+4. **Modifications**: Adding or editing an employee opens the modal. Upon successful submission (and backend validation), the modal closes and the dashboard automatically re-fetches the latest data to reflect changes.
+5. **Exporting**: Clicking "Export" transforms the locally filtered dataset directly into a dynamically generated CSV file on the client-side.
 
 ## Assumptions
-- SQLite was chosen as the database to provide a zero-setup, immediately runnable local environment without requiring the installation of MongoDB/MySQL services on the host machine.
-- Employee mobile number validation assumes generic minimum 10 digits/characters including spaces and hyphens.
-
-## Deployment & GitHub
-To deploy this application:
-1. **GitHub**: Run `git init`, `git add .`, `git commit -m "Initial commit"`, then `git remote add origin <your-repo-url>` and `git push -u origin main`.
-2. **Frontend Deployment**: Use Vercel or Netlify by pointing them to the `/frontend` directory.
-3. **Backend Deployment**: Use Render or Railway by pointing them to the `/backend` directory. (Note: For persistent data in production, switch SQLite to PostgreSQL or MongoDB by updating `config/db.js` and `models/employeeModel.js`).
+- MySQL Server runs on localhost port `3307` (rather than the default `3306`).
+- The database user is `root` with the password `1234`.
+- Node.js API runs precisely on port `5000`, and Vite runs on port `5173`.
+- The database schema handles timestamps (`createdAt`, `updatedAt`) automatically.

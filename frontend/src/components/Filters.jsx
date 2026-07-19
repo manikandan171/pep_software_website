@@ -1,29 +1,42 @@
 import React from 'react';
-import { Search } from 'lucide-react';
+import { Search, Download, Plus, RotateCcw } from 'lucide-react';
 import { DEPARTMENTS, STATUS_OPTIONS } from '../utils/constants';
 
-const Filters = ({ filters, onFilterChange }) => {
+const Filters = ({ filters, onFilterChange, onAdd, onExport }) => {
+  const handleReset = () => {
+    onFilterChange('name', '');
+    onFilterChange('department', '');
+    onFilterChange('status', '');
+  };
+
   return (
-    <div className="controls-container">
-      <div className="input-group search-input">
-        <label>Search Employees</label>
-        <div style={{ position: 'relative' }}>
-          <Search size={18} style={{ position: 'absolute', left: '10px', top: '10px', color: 'var(--text-secondary)' }} />
-          <input
-            type="text"
-            className="input-control"
-            placeholder="Search by name..."
-            style={{ paddingLeft: '2.5rem', width: '100%' }}
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', width: '100%' }}>
+      <div className="content-header">
+        <h2>Employee List</h2>
+        <div className="content-actions">
+          <button className="btn-yellow" onClick={onAdd}>
+            <Plus size={16} /> Add Employee
+          </button>
+          <button className="btn-outline-small" onClick={onExport} title="Export to CSV">
+            <Download size={16} /> Export
+          </button>
+        </div>
+      </div>
+
+      <div className="filters-row">
+        <div className="filter-input-wrap">
+          <Search size={18} />
+          <input 
+            type="text" 
+            className="filter-input" 
+            placeholder="Search by name..." 
             value={filters.name}
             onChange={(e) => onFilterChange('name', e.target.value)}
           />
         </div>
-      </div>
-
-      <div className="input-group filter-select">
-        <label>Department</label>
-        <select
-          className="input-control"
+        
+        <select 
+          className="filter-select"
           value={filters.department}
           onChange={(e) => onFilterChange('department', e.target.value)}
         >
@@ -32,19 +45,20 @@ const Filters = ({ filters, onFilterChange }) => {
             <option key={dept} value={dept}>{dept}</option>
           ))}
         </select>
-      </div>
-
-      <div className="input-group filter-select">
-        <label>Status</label>
-        <select
-          className="input-control"
+        
+        <select 
+          className="filter-select"
           value={filters.status}
           onChange={(e) => onFilterChange('status', e.target.value)}
         >
-          <option value="">All Statuses</option>
+          <option value="">All Status</option>
           <option value={STATUS_OPTIONS.ACTIVE}>{STATUS_OPTIONS.ACTIVE}</option>
           <option value={STATUS_OPTIONS.INACTIVE}>{STATUS_OPTIONS.INACTIVE}</option>
         </select>
+
+        <button className="btn-reset" onClick={handleReset} title="Reset Filters">
+          Reset
+        </button>
       </div>
     </div>
   );
