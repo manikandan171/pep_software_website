@@ -124,7 +124,7 @@ const EmployeeFormModal = ({ isOpen, onClose, onSubmit, initialData }) => {
         </div>
 
         <form onSubmit={handleSubmit}>
-          <div className="modal-body" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 1.5rem' }}>
+          <div className="modal-body-grid">
             {[
               {
                 name: 'fullName',
@@ -148,7 +148,7 @@ const EmployeeFormModal = ({ isOpen, onClose, onSubmit, initialData }) => {
                 ], customIcon: <div className="input-icon" style={{ width: '8px', height: '8px', borderRadius: '50%', background: formData.status === STATUS_OPTIONS.ACTIVE ? '#22c55e' : '#ef4444', left: '1.25rem' }} />
               }
             ].map(f => (
-              <div key={f.name} className="form-group" style={f.fullWidth ? { gridColumn: '1 / -1' } : {}}>
+              <div key={f.name} className={`form-group ${f.fullWidth ? 'form-group-full' : ''}`}>
                 <label>{f.label}</label>
                 <div className="input-with-icon">
                   {f.customIcon ? f.customIcon : <f.icon className="input-icon" size={18} />}

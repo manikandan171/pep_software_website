@@ -604,3 +604,119 @@ select.form-control {
 .btn-outline:hover {
   background: var(--bg-app);
 }
+
+/* Modal Grid Styles */
+.modal-body-grid {
+  padding: 0 2rem 2rem 2rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 1.5rem;
+}
+.form-group-full {
+  grid-column: 1 / -1;
+}
+
+/* Responsive Design */
+
+/* Tablet & Smaller Laptops */
+@media (max-width: 1024px) {
+  .app-layout {
+    grid-template-columns: 200px 1fr;
+  }
+  .stat-cards-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .progress-section {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+/* Mobile Devices */
+@media (max-width: 768px) {
+  .app-layout {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  /* Sidebar into top nav */
+  .sidebar {
+    padding: 1rem;
+    border-right: none;
+    border-bottom: 1px solid var(--border-normal);
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .sidebar-logo {
+    margin-bottom: 0;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+  }
+  .sidebar-nav {
+    flex-direction: row;
+    overflow-x: auto;
+    padding-bottom: 0.25rem;
+  }
+  .nav-item {
+    padding: 0.5rem 0.75rem;
+    white-space: nowrap;
+  }
+  .user-profile {
+    display: none; /* Hide on mobile */
+  }
+
+  .main-content {
+    padding: 1rem;
+  }
+
+  .top-header {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .top-header-right {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .stat-cards-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .filters-row {
+    flex-direction: column;
+  }
+  .filters-row > * {
+    width: 100%;
+  }
+
+  .content-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  .content-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .pagination {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+  
+  .modal-body-grid {
+    grid-template-columns: 1fr;
+    padding: 1rem;
+  }
+  .form-group-full {
+    grid-column: auto;
+  }
+  .modal-header {
+    padding: 1.5rem 1rem 1rem 1rem;
+  }
+  .modal-footer {
+    padding: 1rem;
+  }
+}
